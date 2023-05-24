@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { z } from "zod";
 
 import {
@@ -32,5 +36,31 @@ export const postRouter = createTRPCRouter({
       }
     })
     return posts
+  }),
+
+  toggleLike: protectedProcedure.input(z.object({id: z.string()})).mutation(async ({input: {id}, ctx}) => {
+    const data = {postId: id, userId: ctx.session.user.id}
+    const existingLike = await ctx.prisma.postLike.findUnique(
+      {
+        where: {
+      userId_postId: data
+    }
   })
+    if(existingLike == null) {
+      await ctx.prisma.postLike.create({data})
+      return {addedLike: true}
+    } else {
+      await ctx.prisma.postLike.delete({where: {userId_postId :data}})
+      return {addedLike: false}
+    }
+   
+  }),
+
+  getLikes: publicProcedure.input(z.object({id: z.string()})).query(async({input: {id}, ctx}) => {
+    const likes = await ctx.prisma.postLike.findMany({
+      where: {postId: id}
+    })
+    return likes
+  }),
+
 });
