@@ -4,11 +4,12 @@ import React from "react";
 import LoginIcon from "@mui/icons-material/Login";
 import HomeIcon from "@mui/icons-material/Home";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const SideNav = () => {
   const { data: session } = useSession();
   return (
-    <nav className=" sticky top-0 mr-10 hidden p-4 md:inline ">
+    <nav className=" sticky top-0 m-0 mr-10 p-4 ">
       <ul className="flex flex-col gap-4 py-2">
         <li>
           <Link href="/">
@@ -29,26 +30,25 @@ const SideNav = () => {
           </li>
         ) : (
           <li>
-            <span>Profile</span>
+            <span></span>
           </li>
         )}
         <li>
           {session?.user ? (
             <button
               onClick={() => void signOut()}
-              className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+              className="flex items-center gap-4"
             >
-              Sign Out
+              <LogoutIcon />
+              <span className="hidden md:inline">Logout</span>
             </button>
           ) : (
             <button
               onClick={() => void signIn("google")}
-              className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+              className="flex items-center gap-4"
             >
-              <span>
-                <LoginIcon />
-              </span>
-              Sign In
+              <LoginIcon />
+              <span className="hidden md:inline">Login</span>
             </button>
           )}
         </li>
