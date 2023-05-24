@@ -9,7 +9,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 const SideNav = () => {
   const { data: session } = useSession();
   return (
-    <nav className=" sticky top-0 m-0 mr-10 p-4 ">
+    <nav className=" sticky top-0 m-0 p-4 md:mr-10 ">
       <ul className="flex flex-col gap-4 py-2">
         <li>
           <Link href="/">
