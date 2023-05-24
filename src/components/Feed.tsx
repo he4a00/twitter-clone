@@ -40,16 +40,24 @@ export default Feed;
 
 export const PostCard = ({ post }: { post: PostProps }) => {
   const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(0);
   const { data: postLikes } = api.post.getLikes.useQuery();
-  console.log(postLikes);
   const { data: sessionData } = useSession();
 
   const toggleLike = api.post.toggleLike.useMutation({
     onSuccess: (data) => {
       setLiked(data.addedLike);
+      if (data.addedLike) {
+        setLikes((prevLikes) => prevLikes + 1);
+      } else {
+        setLikes((prevLikes) => prevLikes - 1);
+      }
     },
   });
   useEffect(() => {
+    const postLikesCount =
+      postLikes?.filter((like) => like.postId === post.id).length ?? 0;
+    setLikes(postLikesCount);
     if (postLikes) {
       const userLikedPost = postLikes.some(
         (like) =>
@@ -57,7 +65,7 @@ export const PostCard = ({ post }: { post: PostProps }) => {
       );
       setLiked(userLikedPost);
     }
-  }, [post.id, postLikes, sessionData?.user?.id]);
+  }, [post.id, postLikes?.length, postLikes, sessionData?.user?.id]);
 
   const handleToggleLike = () => {
     toggleLike.mutate({ id: post.id });
@@ -93,8 +101,9 @@ export const PostCard = ({ post }: { post: PostProps }) => {
           <HeartButton
             isLoading={toggleLike.isLoading}
             onClick={handleToggleLike}
-            disabled={toggleLike.isLoading}
+            disabled={toggleLike.isLoading || !sessionData}
             liked={liked}
+            likeCount={likes}
           />
         </div>
       </div>

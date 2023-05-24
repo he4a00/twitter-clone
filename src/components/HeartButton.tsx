@@ -7,6 +7,7 @@ type HeartButtonProps = {
   onClick: () => void;
   isLoading: boolean;
   liked: boolean;
+  likeCount: number;
 };
 
 const HeartButton = ({
@@ -14,6 +15,7 @@ const HeartButton = ({
   onClick,
   isLoading,
   liked,
+  likeCount,
 }: HeartButtonProps) => {
   return (
     <button
@@ -24,15 +26,15 @@ const HeartButton = ({
       <span>
         {liked ? (
           <div>
-            <FavoriteIcon className="fill-red-500" />
+            <FavoriteIcon className="fill-red-500 " />
             <span className="text-red-500">Liked!</span>
           </div>
         ) : (
-          <FavoriteBorderIcon />
+          <FavoriteBorderIcon className=" disabled:text-blue-500" />
         )}
       </span>
 
-      <span className="ml-4">0</span>
+      <span className="ml-4">{likeCount}</span>
     </button>
   );
 };
