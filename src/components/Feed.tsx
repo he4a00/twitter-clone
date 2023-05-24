@@ -4,16 +4,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { api } from "~/utils/api";
-import { useState, useEffect } from "react";
 import ProfileImage from "./ProfileImage";
+
 import Link from "next/link";
 import HeartButton from "./HeartButton";
 
 type PostProps = {
   id: string;
   user: { id: string; image: string | null; name: string | null };
-  likedByMe: boolean;
-  likeCount: number;
   content: string;
   createdAt: Date;
 };
@@ -30,7 +28,12 @@ const Feed = () => {
     <>
       <div className="flex flex-col">
         {data?.map((post) => {
-          return <PostCard key={post.id} id={post.id} post={post} />;
+          return (
+            <PostCard
+              key={post.id}
+              post={{ ...post, id: post.id }}
+            />
+          );
         })}
       </div>
     </>
@@ -40,11 +43,7 @@ const Feed = () => {
 export default Feed;
 
 export const PostCard = ({ post }: { post: PostProps }) => {
-  const toggleLike = api.post.toggleLike.useMutation({
-    onSuccess: (data) => {
-      console.log(data.addedLike);
-    },
-  });
+  const toggleLike = api.post.toggleLike.useMutation({});
 
   const handleToggleLike = () => {
     toggleLike.mutate({ id: post.id });
@@ -55,7 +54,7 @@ export const PostCard = ({ post }: { post: PostProps }) => {
 
   return (
     <div>
-      <div className="flex border-b px-4 py-4" key={post.id}>
+      <div className="flex border-b px-4 py-4">
         <Link href={`/profiles/${post.user.id}`}>
           <ProfileImage
             width={50}
@@ -78,8 +77,6 @@ export const PostCard = ({ post }: { post: PostProps }) => {
           </div>
           <p className="ml-3 flex">{post.content}</p>
           <HeartButton
-            likeCount={post.likeCount}
-            likedByMe={post.likedByMe}
             isLoading={toggleLike.isLoading}
             onClick={handleToggleLike}
             disabled={toggleLike.isLoading}
