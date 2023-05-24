@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { api } from "~/utils/api";
 import ProfileImage from "./ProfileImage";
-
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import HeartButton from "./HeartButton";
 
@@ -28,12 +28,7 @@ const Feed = () => {
     <>
       <div className="flex flex-col">
         {data?.map((post) => {
-          return (
-            <PostCard
-              key={post.id}
-              post={{ ...post, id: post.id }}
-            />
-          );
+          return <PostCard key={post.id} post={{ ...post, id: post.id }} />;
         })}
       </div>
     </>
@@ -43,7 +38,18 @@ const Feed = () => {
 export default Feed;
 
 export const PostCard = ({ post }: { post: PostProps }) => {
-  const toggleLike = api.post.toggleLike.useMutation({});
+  const [liked, setLiked] = useState(false);
+  const { data: postLikes } = api.post.getLikes.useQuery({ id: post.id });
+  const toggleLike = api.post.toggleLike.useMutation({
+    onSuccess: (data) => {
+      setLiked(data.addedLike);
+    },
+  });
+  useEffect(() => {
+    if (postLikes) {
+      setLiked(postLikes.some((like) => like.userId === post.user.id));
+    }
+  }, [post, postLikes]);
 
   const handleToggleLike = () => {
     toggleLike.mutate({ id: post.id });
@@ -80,6 +86,7 @@ export const PostCard = ({ post }: { post: PostProps }) => {
             isLoading={toggleLike.isLoading}
             onClick={handleToggleLike}
             disabled={toggleLike.isLoading}
+            liked={liked}
           />
         </div>
       </div>

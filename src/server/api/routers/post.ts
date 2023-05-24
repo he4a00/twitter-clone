@@ -47,8 +47,8 @@ export const postRouter = createTRPCRouter({
     }
   })
     if(existingLike == null) {
-      await ctx.prisma.postLike.create({data})
-      return {addedLike: true}
+     const createdLike = await ctx.prisma.postLike.create({data})
+      return {addedLike: true, like: createdLike}
     } else {
       await ctx.prisma.postLike.delete({where: {userId_postId :data}})
       return {addedLike: false}
@@ -58,7 +58,7 @@ export const postRouter = createTRPCRouter({
 
   getLikes: publicProcedure.input(z.object({id: z.string()})).query(async({input: {id}, ctx}) => {
     const likes = await ctx.prisma.postLike.findMany({
-      where: {postId: id}
+      where: {postId: id},
     })
     return likes
   }),
