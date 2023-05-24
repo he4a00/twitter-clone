@@ -14,6 +14,10 @@ const Feed = () => {
   const DateFormatter = new Intl.DateTimeFormat(undefined, {
     dateStyle: "short",
   });
+
+  if (data?.length === 0) {
+    return <div className="flex justify-center">No Posts yet.</div>;
+  }
   return (
     <>
       <div className="flex flex-col">
