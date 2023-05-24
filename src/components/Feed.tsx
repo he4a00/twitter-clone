@@ -8,6 +8,7 @@ import ProfileImage from "./ProfileImage";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import HeartButton from "./HeartButton";
+import { useSession } from "next-auth/react";
 
 type PostProps = {
   id: string;
@@ -39,7 +40,10 @@ export default Feed;
 
 export const PostCard = ({ post }: { post: PostProps }) => {
   const [liked, setLiked] = useState(false);
-  const { data: postLikes } = api.post.getLikes.useQuery({ id: post.id });
+  const { data: postLikes } = api.post.getLikes.useQuery();
+  console.log(postLikes);
+  const { data: sessionData } = useSession();
+
   const toggleLike = api.post.toggleLike.useMutation({
     onSuccess: (data) => {
       setLiked(data.addedLike);
@@ -47,9 +51,13 @@ export const PostCard = ({ post }: { post: PostProps }) => {
   });
   useEffect(() => {
     if (postLikes) {
-      setLiked(postLikes.some((like) => like.userId === post.user.id));
+      const userLikedPost = postLikes.some(
+        (like) =>
+          like.postId === post.id && like.userId === sessionData?.user?.id
+      );
+      setLiked(userLikedPost);
     }
-  }, [post, postLikes]);
+  }, [post.id, postLikes, sessionData?.user?.id]);
 
   const handleToggleLike = () => {
     toggleLike.mutate({ id: post.id });
