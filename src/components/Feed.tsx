@@ -43,6 +43,7 @@ export const PostCard = ({ post }: { post: PostProps }) => {
   const [likes, setLikes] = useState(0);
   const { data: postLikes } = api.post.getLikes.useQuery();
   const { data: sessionData } = useSession();
+  const ctx = api.useContext();
 
   const toggleLike = api.post.toggleLike.useMutation({
     onSuccess: (data) => {
@@ -52,6 +53,7 @@ export const PostCard = ({ post }: { post: PostProps }) => {
       } else {
         setLikes((prevLikes) => prevLikes - 1);
       }
+      void ctx.post.getTrendingPosts.invalidate();
     },
   });
   useEffect(() => {

@@ -5,6 +5,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import HomeIcon from "@mui/icons-material/Home";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
+import TagIcon from "@mui/icons-material/Tag";
 
 const SideNav = () => {
   const { data: session } = useSession();
@@ -16,6 +17,15 @@ const SideNav = () => {
             <span className="flex items-center gap-4">
               <HomeIcon />
               <span className="hidden md:inline">Home</span>
+            </span>
+          </Link>
+        </li>
+
+        <li>
+          <Link href="/trend">
+            <span className="flex items-center gap-4">
+              <TagIcon />
+              <span className="hidden md:inline">Trending</span>
             </span>
           </Link>
         </li>

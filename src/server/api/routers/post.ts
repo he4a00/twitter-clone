@@ -41,6 +41,33 @@ export const postRouter = createTRPCRouter({
     return posts
   }),
 
+  // get trending posts based on likes 
+
+  getTrendingPosts: publicProcedure.query(async({ctx}) => {
+    const posts = await ctx.prisma.post.findMany({
+      orderBy: {
+        likes:{
+          _count: "desc"
+        }
+      },
+      take: 10,
+      select: {
+        content: true,
+        id: true,
+        likes:true,
+        createdAt: true,
+        user: {
+          select: {
+            image: true,
+            name: true,       
+            id: true,
+          }
+        }
+      }
+    })
+    return posts
+  }),
+
   toggleLike: protectedProcedure.input(z.object({id: z.string()})).mutation(async ({input: {id}, ctx}) => {
     const data = {postId: id, userId: ctx.session.user.id}
     const existingLike = await ctx.prisma.postLike.findUnique(
