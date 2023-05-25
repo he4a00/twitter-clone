@@ -77,7 +77,7 @@ export const PostCard = ({ post }: { post: PostProps }) => {
   return (
     <div>
       <div className="flex border-b px-4 py-4">
-        <Link href={`/profiles/${post.user.id}`}>
+        <Link href={`/profiles/${post.user?.id}`}>
           <ProfileImage
             width={50}
             height={50}

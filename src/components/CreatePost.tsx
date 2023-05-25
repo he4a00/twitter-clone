@@ -45,6 +45,7 @@ const CreatePost = () => {
             <Button
               className="self-end"
               disabled={postContent.length === 0 || isLoading}
+              text={"Post"}
             />{" "}
           </>
         ) : (
