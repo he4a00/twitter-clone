@@ -91,7 +91,7 @@ export const PostCard = ({ post }: { post: PostProps }) => {
           <div className="flex">
             <Link
               href={`/profiles/${post.user?.id}`}
-              className="px-3 font-bold"
+              className="px-3 font-bold hover:underline"
             >
               {post.user?.name}
             </Link>
