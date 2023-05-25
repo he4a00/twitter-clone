@@ -5,6 +5,7 @@ import Button from "~/components/Button";
 import { PostCard } from "~/components/Feed";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -14,10 +15,11 @@ const ProfilePage = () => {
     id: id.toString(),
   });
 
-  console.log(userPostsData);
-
   return (
     <>
+      <Head>
+        <title>{userPostsData?.name}</title>
+      </Head>
       <div>
         <header className="sticky top-0 border-b p-3">
           <div className="flex gap-8">
