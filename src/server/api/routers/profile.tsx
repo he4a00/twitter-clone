@@ -2,10 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
   createTRPCRouter,
+  protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 
@@ -24,5 +26,41 @@ export const profileRouter = createTRPCRouter({
         },
       });
       return userPosts;
+    }),
+
+  deleteUserPost: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+
+      try {
+        const post = await ctx.prisma.post.findFirst({
+          where: {
+            id: input.postId,
+            userId,
+          },
+        });
+
+        if (!post) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Post not found or user is not the owner",
+          });
+        }
+
+        await ctx.prisma.post.delete({
+          where: {
+            id: input.postId,
+          },
+        });
+
+        return { success: true, message: "Post deleted successfully" };
+      } catch (error) {
+        console.error("Error deleting post:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete post",
+        });
+      }
     }),
 });

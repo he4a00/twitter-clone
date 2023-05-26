@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import Link from "next/link";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import Image from "next/image";
@@ -48,18 +49,30 @@ const ProfilePage = () => {
           <div className="flex flex-col">
             {userPostsData?.Post?.map((post) => {
               return (
-                <PostCard
-                  key={post.id}
-                  post={{
-                    ...post,
-                    id: post.id,
-                    user: {
-                      image: userPostsData.image || null,
-                      id: post.id,
-                      name: userPostsData?.name || null,
-                    },
-                  }}
-                />
+                <>
+                  <div className="flex items-center justify-between p-2">
+                    <PostCard
+                      key={post.id}
+                      post={{
+                        ...post,
+                        id: post.id,
+                        user: {
+                          image: userPostsData.image || null,
+                          id: post.id,
+                          name: userPostsData?.name || null,
+                        },
+                      }}
+                    />
+
+                    {/* {sessionData?.user.id === userPostsData?.id && (
+                      <Button
+                        className="bg-red-500 hover:bg-red-700"
+                        text={"Delete"}
+                        onClick={() => void handleDelete(post.id)}
+                      />
+                    )} */}
+                  </div>
+                </>
               );
             })}
           </div>

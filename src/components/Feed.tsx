@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import HeartButton from "./HeartButton";
 import { useSession } from "next-auth/react";
+import Button from "./Button";
 
 type PostProps = {
   id: string;
@@ -44,6 +45,23 @@ export const PostCard = ({ post }: { post: PostProps }) => {
   const { data: postLikes } = api.post.getLikes.useQuery();
   const { data: sessionData } = useSession();
   const ctx = api.useContext();
+
+  const deletePost = api.profile.deleteUserPost.useMutation({
+    onSuccess: () => {
+      void ctx.post.getAllPosts.invalidate();
+    },
+  });
+
+  const handleDelete = () => {
+    try {
+      deletePost.mutate({ postId: post.id });
+      // Perform any necessary actions after successful deletion
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      // Handle the error, e.g., show an error message to the user
+    }
+    console.log("Fsfs");
+  };
 
   const toggleLike = api.post.toggleLike.useMutation({
     onSuccess: (data) => {
@@ -100,13 +118,25 @@ export const PostCard = ({ post }: { post: PostProps }) => {
             </p>
           </div>
           <p className="ml-3 flex">{post.content}</p>
-          <HeartButton
-            isLoading={toggleLike.isLoading}
-            onClick={handleToggleLike}
-            disabled={toggleLike.isLoading || !sessionData}
-            liked={liked}
-            likeCount={likes}
-          />
+
+          <div className="flex justify-between">
+            <HeartButton
+              isLoading={toggleLike.isLoading}
+              onClick={handleToggleLike}
+              disabled={toggleLike.isLoading || !sessionData}
+              liked={liked}
+              likeCount={likes}
+            />
+
+            {sessionData?.user?.id === post.user.id && (
+              <button
+                className="focus:visible:bg-blue-400 flex rounded-full bg-red-500 px-4 py-2 font-bold text-white transition-colors duration-200 hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-blue-300"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
