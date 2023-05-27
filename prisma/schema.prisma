@@ -51,6 +51,7 @@ model User {
     sessions      Session[]
     Post          Post[]
     likes         PostLike[]
+    Bio           Bio[]
 }
 
 model VerificationToken {
@@ -81,4 +82,13 @@ model PostLike {
     @@id([userId, postId])
     @@index([userId])
     @@index([postId])
+}
+
+model Bio {
+    id     String @id @default(cuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    Text   String
+
+    @@index([userId])
 }

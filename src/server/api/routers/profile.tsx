@@ -63,4 +63,34 @@ export const profileRouter = createTRPCRouter({
         });
       }
     }),
+
+  AddBio: protectedProcedure
+    .input(z.object({ text: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+
+      const bio = await ctx.prisma.bio.create({
+        data: {
+          Text: input.text,
+          userId,
+        },
+      });
+
+      return bio;
+    }),
+
+  getAllBio: publicProcedure.query(async ({ ctx }) => {
+    const bios = await ctx.prisma.bio.findMany({
+      select: {
+        Text: true,
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return bios;
+  }),
 });
