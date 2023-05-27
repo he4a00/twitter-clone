@@ -10,7 +10,7 @@ import TagIcon from "@mui/icons-material/Tag";
 const SideNav = () => {
   const { data: session } = useSession();
   return (
-    <nav className=" sticky top-0 m-0 p-10 md:mr-10 ">
+    <nav className=" sticky top-0 m-0 p-3 md:mr-10 md:p-10 ">
       <ul className="flex flex-col gap-4 py-2">
         <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
           <Link href="/">
