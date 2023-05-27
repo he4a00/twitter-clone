@@ -8,9 +8,11 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Bio from "~/components/Bio";
+import { useSession } from "next-auth/react";
 
 const ProfilePage = () => {
   const router = useRouter();
+  const { data: sessionData } = useSession();
   const { id = "" } = router.query;
   const { data: bioData } = api.profile.getAllBio.useQuery();
 
@@ -45,10 +47,14 @@ const ProfilePage = () => {
         <div className="ml-1 mt-16 flex justify-between border-b p-5">
           <div>
             <h1 className="text-2xl font-bold">{userPostsData?.name}</h1>
-            <Bio />
-            {bioText || "No Bio."}
+            <div className="flex gap-3">
+              {bioText || "No Bio."}
+              <Bio />
+            </div>
           </div>
-          <Button className="items-center" text={"Follow"} />
+          {!(id === sessionData?.user.id) && (
+            <Button className="items-center" text={"Follow"} />
+          )}
         </div>
         <div>
           <div className="flex flex-col">
