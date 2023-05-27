@@ -46,7 +46,7 @@ const ProfilePage = () => {
           <div>
             <h1 className="text-2xl font-bold">{userPostsData?.name}</h1>
             <Bio />
-            {bioText}
+            {bioText || "No Bio."}
           </div>
           <Button className="items-center" text={"Follow"} />
         </div>
