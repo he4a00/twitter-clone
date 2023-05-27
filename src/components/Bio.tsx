@@ -37,7 +37,9 @@ const Bio = () => {
             value={bioContent}
             onChange={(e) => setBioContent(e.target.value)}
           />
-          <button type="submit">Add Bio</button>
+          <button disabled={bioContent.length === 0} type="submit">
+            Add Bio
+          </button>
         </form>
       )}
     </>
