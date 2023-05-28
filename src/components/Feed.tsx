@@ -10,27 +10,27 @@ import Link from "next/link";
 import HeartButton from "./HeartButton";
 import { useSession } from "next-auth/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-
-type PostProps = {
-  id: string;
-  user: { id: string; image: string | null; name: string | null };
-  content: string;
-  createdAt: Date;
-};
+import Retweet from "./Retweet";
 
 const Feed = () => {
-  const { data, isLoading } = api.post.getAllPosts.useQuery();
+  const { data: allPosts, isLoading } = api.post.getAllPosts.useQuery();
 
   if (isLoading) return <div>Loading...</div>;
 
-  if (data?.length === 0) {
+  if (allPosts?.length === 0) {
     return <div className="flex justify-center">No Posts yet.</div>;
   }
   return (
     <>
       <div className="flex flex-col">
-        {data?.map((post) => {
-          return <PostCard key={post.id} post={{ ...post, id: post.id }} />;
+        {allPosts?.map((post) => {
+          return (
+            <PostCard
+              key={post.id}
+              post={{ ...post, id: post.id }}
+              retweetedBy={""}
+            />
+          );
         })}
       </div>
     </>
@@ -39,10 +39,33 @@ const Feed = () => {
 
 export default Feed;
 
-export const PostCard = ({ post }: { post: PostProps }) => {
+type PostProps = {
+  id: string;
+  user: { id: string; image: string | null; name: string | null };
+  content: string;
+  createdAt: Date;
+  retweetedBy?: string | null;
+};
+
+export const PostCard = ({
+  post,
+  retweetedBy,
+}: {
+  post: PostProps;
+  retweetedBy?: string | null;
+}) => {
   const [liked, setLiked] = useState(false);
+  const [retweeted, setRetweeted] = useState(false);
   const [likes, setLikes] = useState(0);
+  const [retweetsCount, setRewtweetsCount] = useState(0);
   const { data: postLikes } = api.post.getLikes.useQuery();
+  // const retweets = useMemo(() => {
+  //   const queryResult = api.post.getAllRetweets.useQuery();
+  //   return queryResult.data ?? [];
+  // }, []);
+
+  const { data: retweetsData } = api.post.getAllRetweets.useQuery();
+
   const { data: sessionData } = useSession();
   const ctx = api.useContext();
 
@@ -60,7 +83,6 @@ export const PostCard = ({ post }: { post: PostProps }) => {
       console.error("Error deleting post:", error);
       // Handle the error, e.g., show an error message to the user
     }
-    console.log("Fsfs");
   };
 
   const toggleLike = api.post.toggleLike.useMutation({
@@ -74,6 +96,8 @@ export const PostCard = ({ post }: { post: PostProps }) => {
       void ctx.post.getTrendingPosts.invalidate();
     },
   });
+
+  // likes useEffect
   useEffect(() => {
     const postLikesCount =
       postLikes?.filter((like) => like.postId === post.id).length ?? 0;
@@ -87,12 +111,45 @@ export const PostCard = ({ post }: { post: PostProps }) => {
     }
   }, [post.id, postLikes?.length, postLikes, sessionData?.user?.id]);
 
+  // retweets useEffect
+
+  useEffect(() => {
+    if (Array.isArray(retweetsData) && post.id && sessionData?.user?.id) {
+      const postRetweetsCount = retweetsData.filter(
+        (retweet) => retweet.post?.id === post.id
+      ).length;
+      setRewtweetsCount(postRetweetsCount);
+
+      const userRetweetedPost = retweetsData.some(
+        (retweet) =>
+          retweet.post?.id === post.id &&
+          retweet.post.user.id === sessionData?.user?.id
+      );
+      setRetweeted(userRetweetedPost);
+    }
+  }, [post.id, retweetsData, sessionData?.user?.id]);
+
   const handleToggleLike = () => {
     toggleLike.mutate({ id: post.id });
   };
   const DateFormatter = new Intl.DateTimeFormat(undefined, {
     dateStyle: "short",
   });
+
+  // retweet logic
+
+  const retweetPost = api.post.retweetPost.useMutation({
+    onSuccess: (data) => {
+      if (data.addedRetweet) {
+        setRewtweetsCount((prevRetweets) => prevRetweets + 1);
+      }
+      void ctx.post.getAllRetweets.invalidate();
+    },
+  });
+
+  const handleRetweet = () => {
+    retweetPost.mutate({ id: post.id });
+  };
 
   return (
     <div>
@@ -106,6 +163,14 @@ export const PostCard = ({ post }: { post: PostProps }) => {
           />
         </Link>
         <div className="flex=grow flex flex-col">
+          <div className="px-3 underline">
+            {retweetedBy ? (
+              <h1>
+                <span className="font-bold">{retweetedBy}</span> Retweeted{" "}
+                <span className="font-bold">{post.user.name}</span> Post
+              </h1>
+            ) : null}
+          </div>
           <div className="flex">
             <Link
               href={`/profiles/${post.user?.id}`}
@@ -126,6 +191,12 @@ export const PostCard = ({ post }: { post: PostProps }) => {
               disabled={toggleLike.isLoading || !sessionData}
               liked={liked}
               likeCount={likes}
+            />
+
+            <Retweet
+              onClick={handleRetweet}
+              retweetCount={retweetsCount}
+              retweetedByMe={retweeted}
             />
 
             {sessionData?.user?.id === post.user.id && (

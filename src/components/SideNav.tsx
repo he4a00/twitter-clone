@@ -29,6 +29,14 @@ const SideNav = () => {
             </span>
           </Link>
         </li>
+        <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
+          <Link href="/retweet">
+            <span className="flex items-center gap-4">
+              <TagIcon />
+              <span className="hidden md:inline">Retweets</span>
+            </span>
+          </Link>
+        </li>
         {session?.user ? (
           <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
             <Link href={`/profiles/${session?.user.id}`}>

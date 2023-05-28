@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -36,6 +37,7 @@ export const postRouter = createTRPCRouter({
             id: true,
           }
         }
+        
       }
     })
     return posts
@@ -89,6 +91,69 @@ export const postRouter = createTRPCRouter({
   getLikes: publicProcedure.query(async({ctx}) => {
     const likes = await ctx.prisma.postLike.findMany()
     return likes
+  }),
+
+  // retweet feature
+
+  retweetPost: protectedProcedure.input(z.object({id: z.string()})).mutation(async({input, ctx}) => {
+    const userId = ctx.session.user.id
+    const username = ctx.session.user.name
+
+    const existingRewtweet = await ctx.prisma.retweet.findUnique({
+      where:
+      {
+        userId_postId: { userId, postId: input.id }
+      } 
+    })
+
+    
+
+    if(existingRewtweet == null) {
+      const createdRetweet = await ctx.prisma.retweet.create({data: {userId, postId: input.id, retweetedBy: username}})
+       return {addedRetweet: true, createdRetweet}
+     } else {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Retweet already exists",
+      });
+     }
+
+    // create a new retweet
+
+    // const retweet = await ctx.prisma.retweet.create({
+    //   data: {userId, postId: input.id}
+    // })
+    // return retweet
+  }),
+
+  // get all rewtweets 
+
+  getAllRetweets: publicProcedure.query(async({ctx}) => {
+    const retweets = await ctx.prisma.retweet.findMany({
+      orderBy: {
+        createdAt: "desc"
+      },
+      select: {
+        retweetedBy: true,
+        post: {
+          select: {
+            content: true,
+            id: true,
+            likes:true,
+            createdAt: true,
+            user: {
+              select: {
+                image: true,
+                name: true,       
+                id: true,
+              }
+            }
+          }
+        }
+        
+      }
+    })
+    return retweets
   }),
 
 });

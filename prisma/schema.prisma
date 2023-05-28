@@ -52,6 +52,7 @@ model User {
     Post          Post[]
     likes         PostLike[]
     Bio           Bio[]
+    Retweet       Retweet[]
 }
 
 model VerificationToken {
@@ -69,6 +70,7 @@ model Post {
     userId    String
     user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
     likes     PostLike[]
+    retweets  Retweet[]
 
     @@index([userId])
 }
@@ -91,4 +93,18 @@ model Bio {
     Text   String
 
     @@index([userId])
+}
+
+model Retweet {
+    id          String   @id @default(cuid())
+    userId      String
+    postId      String
+    retweetedBy String?
+    createdAt   DateTime @default(now())
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, postId])
+    @@index([userId])
+    @@index([postId])
 }
