@@ -11,6 +11,7 @@ import HeartButton from "./HeartButton";
 import { useSession } from "next-auth/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Retweet from "./Retweet";
+import toast from "react-hot-toast";
 
 const Feed = () => {
   const { data: allPosts, isLoading } = api.post.getAllPosts.useQuery();
@@ -64,7 +65,8 @@ export const PostCard = ({
   //   return queryResult.data ?? [];
   // }, []);
 
-  const { data: retweetsData } = api.post.getAllRetweets.useQuery();
+  const { data: retweetsData, isLoading: retweetLoading } =
+    api.post.getAllRetweets.useQuery();
 
   const { data: sessionData } = useSession();
   const ctx = api.useContext();
@@ -140,10 +142,14 @@ export const PostCard = ({
 
   const retweetPost = api.post.retweetPost.useMutation({
     onSuccess: (data) => {
+      setRetweeted(data.addedRetweet);
       if (data.addedRetweet) {
         setRewtweetsCount((prevRetweets) => prevRetweets + 1);
       }
       void ctx.post.getAllRetweets.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -197,6 +203,7 @@ export const PostCard = ({
               onClick={handleRetweet}
               retweetCount={retweetsCount}
               retweetedByMe={retweeted}
+              disabled={retweetLoading || !sessionData}
             />
 
             {sessionData?.user?.id === post.user.id && (

@@ -5,24 +5,23 @@ type RetweetPostProps = {
   onClick: () => void;
   retweetCount: number;
   retweetedByMe: boolean;
+  disabled: boolean;
 };
 
 const Retweet = ({
   onClick,
   retweetCount,
   retweetedByMe,
+  disabled,
 }: RetweetPostProps) => {
   return (
     <>
-      <button className="ml-3 flex p-2" onClick={onClick}>
+      <button disabled={disabled} className="ml-3 flex p-2" onClick={onClick}>
         <span>
           {retweetedByMe ? (
-            <div>
-              <SwapCallsIcon className="fill-red-500 " />
-              <span className="text-red-500">Shared!</span>
-            </div>
+            <SwapCallsIcon className="fill-blue-500" />
           ) : (
-            <SwapCallsIcon className=" disabled:text-blue-500" />
+            <SwapCallsIcon />
           )}
         </span>
         <span className="ml-4">{retweetCount}</span>

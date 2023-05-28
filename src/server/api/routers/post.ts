@@ -114,16 +114,11 @@ export const postRouter = createTRPCRouter({
      } else {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "Retweet already exists",
+        message: "You Already Retweeted this post",
       });
      }
 
-    // create a new retweet
-
-    // const retweet = await ctx.prisma.retweet.create({
-    //   data: {userId, postId: input.id}
-    // })
-    // return retweet
+    
   }),
 
   // get all rewtweets 
@@ -131,9 +126,14 @@ export const postRouter = createTRPCRouter({
   getAllRetweets: publicProcedure.query(async({ctx}) => {
     const retweets = await ctx.prisma.retweet.findMany({
       orderBy: {
-        createdAt: "desc"
+        post : {
+          retweets: {
+            _count: "desc"
+          }
+        }
       },
       select: {
+
         retweetedBy: true,
         post: {
           select: {

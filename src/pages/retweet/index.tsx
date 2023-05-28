@@ -8,7 +8,9 @@ import { api } from "~/utils/api";
 import { PostCard } from "~/components/Feed";
 
 const RetweetPage = () => {
-  const { data: retweetsData } = api.post.getAllRetweets.useQuery();
+  const { data: retweetsData, isLoading } = api.post.getAllRetweets.useQuery();
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <>
@@ -25,10 +27,10 @@ const RetweetPage = () => {
           <h1 className="font-bold">Retweets</h1>
         </div>
       </header>
-      {retweetsData?.map((retweet) => {
+      {retweetsData?.map((retweet, idx) => {
         return (
           <PostCard
-            key={retweet.post.id}
+            key={idx}
             post={retweet.post}
             retweetedBy={retweet.retweetedBy}
           />
