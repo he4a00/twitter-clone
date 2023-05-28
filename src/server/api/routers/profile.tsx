@@ -18,7 +18,17 @@ export const profileRouter = createTRPCRouter({
       const userPosts = await ctx.prisma.user.findUnique({
         where: { id: input.id },
         select: {
-          Post: true,
+          Post: {
+            select: {
+              _count: true,
+              content: true,
+              likes: true,
+              id: true,
+              createdAt: true,
+              retweets: true,
+              user: true,
+            },
+          },
           id: true,
           name: true,
           image: true,

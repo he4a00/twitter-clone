@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import Link from "next/link";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
@@ -5,15 +7,23 @@ import Image from "next/image";
 import Button from "~/components/Button";
 import { PostCard } from "~/components/Feed";
 import { api } from "~/utils/api";
-import { useRouter } from "next/router";
 import Head from "next/head";
 import Bio from "~/components/Bio";
 import { useSession } from "next-auth/react";
+import type {
+  GetStaticPaths,
+  GetStaticPropsContext,
+  InferGetServerSidePropsType,
+  NextPage,
+} from "next";
+import { ssgHelper } from "~/server/api/ssgHelper";
 
-const ProfilePage = () => {
-  const router = useRouter();
+const ProfilePage: NextPage<
+  InferGetServerSidePropsType<typeof getStaticProps>
+> = ({ id }) => {
+  // const router = useRouter();
   const { data: sessionData } = useSession();
-  const { id = "" } = router.query;
+  // const { id = "" } = router.query;
   const { data: bioData } = api.profile.getAllBio.useQuery();
 
   const { data: userPostsData } = api.profile.getUserPosts.useQuery({
@@ -21,6 +31,8 @@ const ProfilePage = () => {
   });
 
   const bioText = bioData?.find((bio) => bio.user.id === id)?.Text;
+
+  
 
   return (
     <>
@@ -52,6 +64,7 @@ const ProfilePage = () => {
               <Bio />
             </div>
           </div>
+
           {!(id === sessionData?.user.id) && (
             <Button className="items-center" text={"Follow"} />
           )}
@@ -84,5 +97,34 @@ const ProfilePage = () => {
     </>
   );
 };
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+};
+
+export async function getStaticProps(
+  context: GetStaticPropsContext<{ id: string }>
+) {
+  const id = context.params?.id;
+  if (id == null) {
+    return {
+      redirect: {
+        destination: "/",
+      },
+    };
+  }
+  const ssg = ssgHelper();
+  await ssg.profile.getUserPosts.prefetch({ id });
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+      id,
+    },
+  };
+}
 
 export default ProfilePage;

@@ -135,7 +135,12 @@ export const PostCard = ({
     toggleLike.mutate({ id: post.id });
   };
   const DateFormatter = new Intl.DateTimeFormat(undefined, {
-    dateStyle: "short",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
   });
 
   // retweet logic
