@@ -27,12 +27,14 @@ const RetweetPage = () => {
           <h1 className="font-bold">Retweets</h1>
         </div>
       </header>
+
       {retweetsData?.map((retweet, idx) => {
         return (
           <PostCard
             key={idx}
             post={retweet.post}
             retweetedBy={retweet.retweetedBy}
+            userImage={retweet.userImage}
           />
         );
       })}

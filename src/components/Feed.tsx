@@ -46,14 +46,17 @@ type PostProps = {
   content: string;
   createdAt: Date;
   retweetedBy?: string | null;
+  userImage?: string | null;
 };
 
 export const PostCard = ({
   post,
   retweetedBy,
+  userImage,
 }: {
   post: PostProps;
   retweetedBy?: string | null;
+  userImage?: string | null;
 }) => {
   const [liked, setLiked] = useState(false);
   const [retweeted, setRetweeted] = useState(false);
@@ -164,6 +167,20 @@ export const PostCard = ({
 
   return (
     <div>
+      {retweetedBy ? (
+        <div className="flex items-center gap-4  p-2">
+          <ProfileImage
+            width={30}
+            height={30}
+            src={userImage || ""}
+            className="gap-4"
+          />
+          <h1 className="text-sm">
+            <span className="font-bold">{retweetedBy}</span> Retweeted{" "}
+            <span className="font-bold">{post.user.name}</span> Post
+          </h1>
+        </div>
+      ) : null}
       <div className="flex border-b px-4 py-4">
         <Link href={`/profiles/${post.user?.id}`}>
           <ProfileImage
@@ -174,14 +191,7 @@ export const PostCard = ({
           />
         </Link>
         <div className="flex=grow flex flex-col">
-          <div className="px-3 underline">
-            {retweetedBy ? (
-              <h1>
-                <span className="font-bold">{retweetedBy}</span> Retweeted{" "}
-                <span className="font-bold">{post.user.name}</span> Post
-              </h1>
-            ) : null}
-          </div>
+          <div className="px-3 underline"></div>
           <div className="flex">
             <Link
               href={`/profiles/${post.user?.id}`}

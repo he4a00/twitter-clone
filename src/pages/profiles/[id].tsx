@@ -21,18 +21,16 @@ import { ssgHelper } from "~/server/api/ssgHelper";
 const ProfilePage: NextPage<
   InferGetServerSidePropsType<typeof getStaticProps>
 > = ({ id }) => {
-  // const router = useRouter();
   const { data: sessionData } = useSession();
-  // const { id = "" } = router.query;
   const { data: bioData } = api.profile.getAllBio.useQuery();
-
   const { data: userPostsData } = api.profile.getUserPosts.useQuery({
     id: id.toString(),
   });
+  const { data: userRetweets } = api.profile.getUserRetweets.useQuery({
+    id,
+  });
 
   const bioText = bioData?.find((bio) => bio.user.id === id)?.Text;
-
-  
 
   return (
     <>
@@ -91,6 +89,17 @@ const ProfilePage: NextPage<
                 </>
               );
             })}
+
+            {/* {userRetweetsData?.post.map((retweet, idx) => {
+              return (
+                <PostCard
+                  key={idx}
+                  post={retweet.post}
+                  retweetedBy={retweet.retweetedBy}
+                  userImage={retweet.userImage}
+                />
+              );
+            })} */}
           </div>
         </div>
       </div>

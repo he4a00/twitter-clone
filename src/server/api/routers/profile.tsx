@@ -103,4 +103,21 @@ export const profileRouter = createTRPCRouter({
 
     return bios;
   }),
+
+  // get user retweets and display them in his profile
+
+  getUserRetweets: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const userRetweetes = await ctx.prisma.retweet.findUnique({
+        where: { id: input.id },
+        select: {
+          retweetedBy: true,
+          userImage: true,
+          post: true,
+        },
+      });
+
+      return userRetweetes;
+    }),
 });

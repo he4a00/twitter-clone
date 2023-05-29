@@ -98,6 +98,7 @@ export const postRouter = createTRPCRouter({
   retweetPost: protectedProcedure.input(z.object({id: z.string()})).mutation(async({input, ctx}) => {
     const userId = ctx.session.user.id
     const username = ctx.session.user.name
+    const image = ctx.session.user.image
 
     const existingRewtweet = await ctx.prisma.retweet.findUnique({
       where:
@@ -109,7 +110,7 @@ export const postRouter = createTRPCRouter({
     
 
     if(existingRewtweet == null) {
-      const createdRetweet = await ctx.prisma.retweet.create({data: {userId, postId: input.id, retweetedBy: username}})
+      const createdRetweet = await ctx.prisma.retweet.create({data: {userId, postId: input.id, retweetedBy: username, userImage: image}})
        return {addedRetweet: true, createdRetweet}
      } else {
       throw new TRPCError({
@@ -133,8 +134,8 @@ export const postRouter = createTRPCRouter({
         }
       },
       select: {
-
         retweetedBy: true,
+        userImage: true,
         post: {
           select: {
             content: true,
