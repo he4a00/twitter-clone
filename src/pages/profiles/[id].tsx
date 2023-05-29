@@ -18,13 +18,6 @@ import type {
 } from "next";
 import { ssgHelper } from "~/server/api/ssgHelper";
 
-interface UserRetweet {
-  id: string;
-  post: PostType;
-  retweetedBy: string;
-  userImage: string;
-}
-
 const ProfilePage: NextPage<
   InferGetServerSidePropsType<typeof getStaticProps>
 > = ({ id }) => {
