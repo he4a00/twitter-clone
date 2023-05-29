@@ -10,6 +10,8 @@ import { PostCard } from "~/components/Feed";
 const RetweetPage = () => {
   const { data: retweetsData, isLoading } = api.post.getAllRetweets.useQuery();
 
+  console.log(retweetsData);
+
   if (isLoading) return <div>Loading...</div>;
 
   return (

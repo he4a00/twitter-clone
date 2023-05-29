@@ -109,12 +109,26 @@ export const profileRouter = createTRPCRouter({
   getUserRetweets: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const userRetweetes = await ctx.prisma.retweet.findUnique({
-        where: { id: input.id },
+      const userRetweetes = await ctx.prisma.retweet.findFirst({
+        where: { userId: input.id },
         select: {
           retweetedBy: true,
           userImage: true,
-          post: true,
+          post: {
+            select: {
+              content: true,
+              id: true,
+              likes: true,
+              createdAt: true,
+              user: {
+                select: {
+                  image: true,
+                  name: true,
+                  id: true,
+                },
+              },
+            },
+          },
         },
       });
 

@@ -151,7 +151,6 @@ export const postRouter = createTRPCRouter({
             }
           }
         }
-        
       }
     })
     return retweets

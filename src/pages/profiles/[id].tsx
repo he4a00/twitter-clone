@@ -18,6 +18,13 @@ import type {
 } from "next";
 import { ssgHelper } from "~/server/api/ssgHelper";
 
+interface UserRetweet {
+  id: string;
+  post: PostType;
+  retweetedBy: string;
+  userImage: string;
+}
+
 const ProfilePage: NextPage<
   InferGetServerSidePropsType<typeof getStaticProps>
 > = ({ id }) => {
@@ -26,9 +33,12 @@ const ProfilePage: NextPage<
   const { data: userPostsData } = api.profile.getUserPosts.useQuery({
     id: id.toString(),
   });
+
   const { data: userRetweets } = api.profile.getUserRetweets.useQuery({
-    id,
+    id: id.toString(),
   });
+
+  console.log(userRetweets);
 
   const bioText = bioData?.find((bio) => bio.user.id === id)?.Text;
 
@@ -90,16 +100,25 @@ const ProfilePage: NextPage<
               );
             })}
 
-            {/* {userRetweetsData?.post.map((retweet, idx) => {
-              return (
-                <PostCard
-                  key={idx}
-                  post={retweet.post}
-                  retweetedBy={retweet.retweetedBy}
-                  userImage={retweet.userImage}
-                />
-              );
-            })} */}
+            {[userRetweets].map((retweetedPost, idx) => {
+              if (retweetedPost) {
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2"
+                  >
+                    <PostCard
+                      key={retweetedPost.post.id}
+                      post={retweetedPost.post}
+                      retweetedBy={retweetedPost.retweetedBy}
+                      userImage={retweetedPost.userImage}
+                    />
+                  </div>
+                );
+              } else {
+                return null; // or any fallback UI for null/undefined case
+              }
+            })}
           </div>
         </div>
       </div>

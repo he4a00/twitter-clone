@@ -96,8 +96,8 @@ model Bio {
 }
 
 model Retweet {
-    id          String   @id @default(cuid())
-    userId      String
+    id          String   @id @unique @default(cuid())
+    userId      String   
     postId      String
     retweetedBy String?
     userImage   String?
