@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import SideNav from "~/components/SideNav";
 import { Toaster } from "react-hot-toast";
+import RightNav from "~/components/RightNav";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -20,6 +21,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <div className="align-start min-h-screen flex-grow border-x">
           <Component {...pageProps} />
         </div>
+        <RightNav />
       </div>
     </SessionProvider>
   );

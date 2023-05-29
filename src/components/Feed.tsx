@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 
 const Feed = () => {
   const { data: allPosts, isLoading } = api.post.getAllPosts.useQuery();
+  const { data: retweetsData } = api.post.getAllRetweets.useQuery();
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -30,6 +31,16 @@ const Feed = () => {
               key={post.id}
               post={{ ...post, id: post.id }}
               retweetedBy={""}
+            />
+          );
+        })}
+        {retweetsData?.map((retweet, idx) => {
+          return (
+            <PostCard
+              key={idx}
+              post={retweet.post}
+              retweetedBy={retweet.retweetedBy}
+              userImage={retweet.userImage}
             />
           );
         })}
@@ -63,10 +74,6 @@ export const PostCard = ({
   const [likes, setLikes] = useState(0);
   const [retweetsCount, setRewtweetsCount] = useState(0);
   const { data: postLikes } = api.post.getLikes.useQuery();
-  // const retweets = useMemo(() => {
-  //   const queryResult = api.post.getAllRetweets.useQuery();
-  //   return queryResult.data ?? [];
-  // }, []);
 
   const { data: retweetsData, isLoading: retweetLoading } =
     api.post.getAllRetweets.useQuery();
@@ -77,16 +84,15 @@ export const PostCard = ({
   const deletePost = api.profile.deleteUserPost.useMutation({
     onSuccess: () => {
       void ctx.post.getAllPosts.invalidate();
+      void ctx.post.getAllRetweets.invalidate();
     },
   });
 
   const handleDelete = () => {
     try {
       deletePost.mutate({ postId: post.id });
-      // Perform any necessary actions after successful deletion
     } catch (error) {
       console.error("Error deleting post:", error);
-      // Handle the error, e.g., show an error message to the user
     }
   };
 
@@ -164,7 +170,6 @@ export const PostCard = ({
   const handleRetweet = () => {
     retweetPost.mutate({ id: post.id });
   };
-  
 
   return (
     <div>

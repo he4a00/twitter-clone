@@ -6,6 +6,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import TagIcon from "@mui/icons-material/Tag";
+import SwapCallsIcon from "@mui/icons-material/SwapCalls";
 
 const SideNav = () => {
   const { data: session } = useSession();
@@ -32,7 +33,7 @@ const SideNav = () => {
         <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
           <Link href="/retweet">
             <span className="flex items-center gap-4">
-              <TagIcon />
+              <SwapCallsIcon />
               <span className="hidden md:inline">Retweets</span>
             </span>
           </Link>
