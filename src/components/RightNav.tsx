@@ -9,6 +9,7 @@ const RightNav = () => {
   return (
     <nav className="sticky top-0 m-0 hidden p-3 md:mr-10 md:inline md:p-10">
       <div className="flex flex-grow flex-col border p-5">
+        <h1 className="border-b p-2 text-2xl font-bold">Who To Follow</h1>
         {data?.map((user) => (
           <div
             key={user.image}

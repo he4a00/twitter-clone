@@ -111,6 +111,9 @@ export const profileRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const userRetweetes = await ctx.prisma.retweet.findFirst({
         where: { userId: input.id },
+        orderBy: {
+          createdAt: "desc",
+        },
         select: {
           retweetedBy: true,
           userImage: true,

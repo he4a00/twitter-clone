@@ -21,7 +21,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <div className="align-start min-h-screen flex-grow border-x">
           <Component {...pageProps} />
         </div>
-        <RightNav />
+        {/* <RightNav /> */}
       </div>
     </SessionProvider>
   );
