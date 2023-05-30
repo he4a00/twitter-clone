@@ -11,7 +11,6 @@ import HeartButton from "./HeartButton";
 import { useSession } from "next-auth/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Retweet from "./Retweet";
-import toast from "react-hot-toast";
 
 const Feed = () => {
   const { data: allPosts, isLoading } = api.post.getAllPosts.useQuery();
@@ -73,11 +72,10 @@ export const PostCard = ({
   const [liked, setLiked] = useState(false);
   const [retweeted, setRetweeted] = useState(false);
   const [likes, setLikes] = useState(0);
-  const [retweetsCount, setRewtweetsCount] = useState(0);
+  const [retweetsCount, setRetweetsCount] = useState(0);
   const { data: postLikes } = api.post.getLikes.useQuery();
 
-  const { data: retweetsData, isLoading: retweetLoading } =
-    api.post.getAllRetweets.useQuery();
+  const { isLoading: retweetLoading } = api.post.getAllRetweets.useQuery();
 
   const { data: sessionData } = useSession();
   const ctx = api.useContext();
@@ -123,24 +121,6 @@ export const PostCard = ({
     }
   }, [post.id, postLikes?.length, postLikes, sessionData?.user?.id]);
 
-  // retweets useEffect
-
-  useEffect(() => {
-    if (Array.isArray(retweetsData) && post.id && sessionData?.user?.id) {
-      const postRetweetsCount = retweetsData.filter(
-        (retweet) => retweet.post?.id === post.id
-      ).length;
-      setRewtweetsCount(postRetweetsCount);
-
-      const userRetweetedPost = retweetsData.some(
-        (retweet) =>
-          retweet.post?.id === post.id &&
-          retweet.post.user.id === sessionData?.user?.id
-      );
-      setRetweeted(userRetweetedPost);
-    }
-  }, [post.id, retweetsData, sessionData?.user?.id]);
-
   const handleToggleLike = () => {
     toggleLike.mutate({ id: post.id });
   };
@@ -154,23 +134,6 @@ export const PostCard = ({
   });
 
   // retweet logic
-
-  const retweetPost = api.post.retweetPost.useMutation({
-    onSuccess: (data) => {
-      setRetweeted(data.addedRetweet);
-      if (data.addedRetweet) {
-        setRewtweetsCount((prevRetweets) => prevRetweets + 1);
-      }
-      void ctx.post.getAllRetweets.invalidate();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const handleRetweet = () => {
-    retweetPost.mutate({ id: post.id });
-  };
 
   return (
     <div>
@@ -224,10 +187,13 @@ export const PostCard = ({
             />
 
             <Retweet
-              onClick={handleRetweet}
+              postId={post.id}
               retweetCount={retweetsCount}
               retweetedByMe={retweeted}
               disabled={retweetLoading || !sessionData}
+              post={post}
+              setRetweetsCount={setRetweetsCount}
+              setRetweeted={setRetweeted}
             />
 
             {sessionData?.user?.id === post.user.id && (
