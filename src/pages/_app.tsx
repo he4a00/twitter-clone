@@ -7,7 +7,6 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import SideNav from "~/components/SideNav";
 import { Toaster } from "react-hot-toast";
-import RightNav from "~/components/RightNav";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

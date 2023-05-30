@@ -34,6 +34,7 @@ const Feed = () => {
             />
           );
         })}
+
         {retweetsData?.map((retweet, idx) => {
           return (
             <PostCard
@@ -175,16 +176,18 @@ export const PostCard = ({
     <div>
       {retweetedBy ? (
         <div className="flex items-center gap-4  p-2">
-          <ProfileImage
-            width={30}
-            height={30}
-            src={userImage || ""}
-            className="gap-4"
-          />
-          <h1 className="text-sm">
-            <span className="font-bold">{retweetedBy}</span> Retweeted{" "}
-            <span className="font-bold">{post.user.name}</span> Post
-          </h1>
+          <div className="flex items-center gap-2 border-b p-2">
+            <ProfileImage
+              width={30}
+              height={30}
+              src={userImage || ""}
+              className="gap-4"
+            />
+            <h1 className="text-sm">
+              <span className="font-bold">{retweetedBy}</span> Retweeted{" "}
+              <span className="font-bold">{post.user.name}</span> Post
+            </h1>
+          </div>
         </div>
       ) : null}
       <div className="flex border-b px-4 py-4">
