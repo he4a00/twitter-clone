@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { api } from "~/utils/api";
 import ProfileImage from "./ProfileImage";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import HeartButton from "./HeartButton";
 import { useSession } from "next-auth/react";
@@ -73,7 +73,6 @@ export const PostCard = ({
   const [retweeted, setRetweeted] = useState(false);
   const [likes, setLikes] = useState(0);
   const [retweetsCount, setRetweetsCount] = useState(0);
-  const { data: postLikes } = api.post.getLikes.useQuery();
 
   const { isLoading: retweetLoading } = api.post.getAllRetweets.useQuery();
 
@@ -95,35 +94,6 @@ export const PostCard = ({
     }
   };
 
-  const toggleLike = api.post.toggleLike.useMutation({
-    onSuccess: (data) => {
-      setLiked(data.addedLike);
-      if (data.addedLike) {
-        setLikes((prevLikes) => prevLikes + 1);
-      } else {
-        setLikes((prevLikes) => prevLikes - 1);
-      }
-      void ctx.post.getTrendingPosts.invalidate();
-    },
-  });
-
-  // likes useEffect
-  useEffect(() => {
-    const postLikesCount =
-      postLikes?.filter((like) => like.postId === post.id).length ?? 0;
-    setLikes(postLikesCount);
-    if (postLikes) {
-      const userLikedPost = postLikes.some(
-        (like) =>
-          like.postId === post.id && like.userId === sessionData?.user?.id
-      );
-      setLiked(userLikedPost);
-    }
-  }, [post.id, postLikes?.length, postLikes, sessionData?.user?.id]);
-
-  const handleToggleLike = () => {
-    toggleLike.mutate({ id: post.id });
-  };
   const DateFormatter = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
     month: "long",
@@ -132,8 +102,6 @@ export const PostCard = ({
     minute: "numeric",
     second: "numeric",
   });
-
-  // retweet logic
 
   return (
     <div>
@@ -179,11 +147,13 @@ export const PostCard = ({
 
           <div className="flex">
             <HeartButton
-              isLoading={toggleLike.isLoading}
-              onClick={handleToggleLike}
-              disabled={toggleLike.isLoading || !sessionData}
               liked={liked}
               likeCount={likes}
+              setLiked={setLiked}
+              setLikes={setLikes}
+              disabled={false}
+              post={post}
+              postId={post.id}
             />
 
             <Retweet
