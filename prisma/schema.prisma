@@ -42,9 +42,9 @@ model Session {
 }
 
 model User {
-    id            String     @id @default(cuid())
+    id            String       @id @default(cuid())
     name          String?
-    email         String?    @unique
+    email         String?      @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
@@ -53,6 +53,7 @@ model User {
     likes         PostLike[]
     Bio           Bio[]
     Retweet       Retweet[]
+    SavedPosts    SavedPosts[]
 }
 
 model VerificationToken {
@@ -64,13 +65,14 @@ model VerificationToken {
 }
 
 model Post {
-    id        String     @id @default(cuid())
-    content   String
-    createdAt DateTime   @default(now())
-    userId    String
-    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-    likes     PostLike[]
-    retweets  Retweet[]
+    id         String       @id @default(cuid())
+    content    String
+    createdAt  DateTime     @default(now())
+    userId     String
+    user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    likes      PostLike[]
+    retweets   Retweet[]
+    SavedPosts SavedPosts[]
 
     @@index([userId])
 }
@@ -97,7 +99,7 @@ model Bio {
 
 model Retweet {
     id          String   @id @unique @default(cuid())
-    userId      String   
+    userId      String
     postId      String
     retweetedBy String?
     userImage   String?
@@ -106,6 +108,18 @@ model Retweet {
     post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
     @@unique([userId, postId])
+    @@index([userId])
+    @@index([postId])
+}
+
+model SavedPosts {
+    id     String @id @default(cuid())
+    userId String
+    postId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+    @@unique([userId, postId])
+
     @@index([userId])
     @@index([postId])
 }

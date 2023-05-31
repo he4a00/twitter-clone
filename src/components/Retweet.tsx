@@ -74,7 +74,7 @@ const Retweet = ({
       const userRetweetedPost = retweetsData.some(
         (retweet) =>
           retweet.post?.id === post.id &&
-          retweet.post.user.id === sessionData?.user?.id
+          retweet.post.user?.id === sessionData?.user?.id
       );
       setRetweeted(userRetweetedPost);
     }

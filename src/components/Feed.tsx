@@ -11,6 +11,7 @@ import HeartButton from "./HeartButton";
 import { useSession } from "next-auth/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Retweet from "./Retweet";
+import SaveButton from "./SaveButton";
 
 const Feed = () => {
   const { data: allPosts, isLoading } = api.post.getAllPosts.useQuery();
@@ -73,6 +74,7 @@ export const PostCard = ({
   const [retweeted, setRetweeted] = useState(false);
   const [likes, setLikes] = useState(0);
   const [retweetsCount, setRetweetsCount] = useState(0);
+  const [saved, setSaved] = useState(false);
 
   const { isLoading: retweetLoading } = api.post.getAllRetweets.useQuery();
 
@@ -164,6 +166,13 @@ export const PostCard = ({
               post={post}
               setRetweetsCount={setRetweetsCount}
               setRetweeted={setRetweeted}
+            />
+
+            <SaveButton
+              post={post}
+              saved={saved}
+              postId={post.id}
+              setSaved={setSaved}
             />
 
             {sessionData?.user?.id === post.user.id && (
