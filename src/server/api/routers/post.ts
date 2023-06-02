@@ -158,27 +158,21 @@ export const postRouter = createTRPCRouter({
 
   addtoSavedPosts: protectedProcedure.input(z.object({id: z.string()})).mutation(async({input, ctx}) => {
     const userId = ctx.session.user.id
-    // const savedPost = await ctx.prisma.savedPosts.create({
-    //   data: {postId: input.id, userId: userId}
-    // })
+   
     const existingSaved = await ctx.prisma.savedPosts.findUnique({
       where:
-      {
-        
+      { 
         userId_postId: {userId, postId: input.id}
       } 
     })
 
-    
 
     if(existingSaved == null) {
       const createdSavedPost = await ctx.prisma.savedPosts.create({data: {postId: input.id, userId: userId}})
        return {addedSaved: true, createdSavedPost}
-     } else {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "You Already Saved this post",
-      });
+     } else { 
+        await ctx.prisma.savedPosts.delete({where: {userId_postId: {postId: input.id, userId: userId}}})
+        return {addedSaved: false}
      }
     
   }),

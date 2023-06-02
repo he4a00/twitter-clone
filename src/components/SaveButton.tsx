@@ -3,6 +3,7 @@ import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { api } from "~/utils/api";
+import toast from "react-hot-toast";
 
 type SaveButtonProps = {
   saved: boolean | undefined;
@@ -27,9 +28,13 @@ const SaveButton = ({ saved, post, postId, setSaved }: SaveButtonProps) => {
     onSuccess: (data: {
       addedSaved: boolean | ((prevState: boolean) => boolean);
     }) => {
-      console.log(data);
       setSaved(data.addedSaved);
       void ctx.post.getSavedPosts.invalidate();
+      toast.success(
+        data.addedSaved
+          ? `This post has been saved successfully`
+          : `This post has been removed frm your saved posts`
+      );
     },
   });
   useEffect(() => {
