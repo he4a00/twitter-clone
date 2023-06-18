@@ -31,8 +31,6 @@ const ProfilePage: NextPage<
     id: id.toString(),
   });
 
-  console.log(userRetweets);
-
   const bioText = bioData?.find((bio) => bio.user.id === id)?.Text;
 
   return (

@@ -80,7 +80,7 @@ const HeartButton = ({
         {liked ? (
           <div>
             <FavoriteIcon className="fill-red-500 " />
-            <span className="text-red-500">Liked!</span>
+            
           </div>
         ) : (
           <FavoriteBorderIcon className=" disabled:text-blue-500" />

@@ -178,15 +178,27 @@ export const postRouter = createTRPCRouter({
   }),
 
 
-  getSavedPosts: protectedProcedure.query(async ({ctx}) => {
-    const savedPosts = await ctx.prisma.savedPosts.findMany({
+  getSavedPosts: protectedProcedure.input(z.object({ id: z.string() })).query(async({input, ctx}) => {
+    const savedPosts = await ctx.prisma.savedPosts.findFirst({
+      where: {userId: input.id}, 
       select: {
-        post: true,
-        user: true,
-        id: true,
-        postId: true,
-        userId: true
-      }
+        post: {
+          select: {
+            content: true,
+            id: true,
+            likes: true,
+            createdAt: true,
+            user: {
+              select: {
+                image: true,
+                name: true,
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    
     })
     return savedPosts
   })

@@ -7,6 +7,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import TagIcon from "@mui/icons-material/Tag";
 import SwapCallsIcon from "@mui/icons-material/SwapCalls";
+import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 
 const SideNav = () => {
   const { data: session } = useSession();
@@ -15,7 +16,7 @@ const SideNav = () => {
       <ul className="flex flex-col gap-4 py-2">
         <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
           <Link href="/">
-            <span className="flex items-center gap-4">
+            <span className="m-0 flex items-center gap-4">
               <HomeIcon />
               <span className="hidden md:inline">Home</span>
             </span>
@@ -24,7 +25,7 @@ const SideNav = () => {
 
         <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
           <Link href="/trend">
-            <span className="flex items-center gap-4">
+            <span className="m-0 flex items-center gap-4">
               <TagIcon />
               <span className="hidden md:inline">Trending</span>
             </span>
@@ -32,7 +33,7 @@ const SideNav = () => {
         </li>
         <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
           <Link href="/retweet">
-            <span className="flex items-center gap-4">
+            <span className="m-0 flex items-center gap-4">
               <SwapCallsIcon />
               <span className="hidden md:inline">Retweets</span>
             </span>
@@ -41,9 +42,22 @@ const SideNav = () => {
         {session?.user ? (
           <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
             <Link href={`/profiles/${session?.user.id}`}>
-              <span className="flex items-center gap-4">
+              <span className="m-0 flex items-center gap-4">
                 <AccountCircleIcon />
                 <span className="hidden md:inline">Profile</span>
+              </span>
+            </Link>
+          </li>
+        ) : (
+          ""
+        )}
+
+        {session?.user ? (
+          <li className="rounded-full p-3 transition-all duration-300 hover:bg-slate-200">
+            <Link href={`/profiles/${session?.user.id}/saved/`}>
+              <span className="m-0 flex items-center gap-4">
+                <BookmarkAddedIcon />
+                <span className="hidden md:inline">Saved Posts</span>
               </span>
             </Link>
           </li>

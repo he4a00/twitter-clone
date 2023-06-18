@@ -177,7 +177,7 @@ export const PostCard = ({
 
             {sessionData?.user?.id === post.user.id && (
               <button
-                className="focus:visible:bg-blue-400 fo  flex px-4 py-2 transition-colors duration-200 hover:text-red-500 disabled:cursor-not-allowed disabled:text-gray-300"
+                className="focus:visible:bg-blue-400 flex px-4 py-2 transition-colors duration-200 hover:text-red-500 disabled:cursor-not-allowed disabled:text-gray-300"
                 onClick={handleDelete}
                 disabled={deletePost.isLoading}
               >
