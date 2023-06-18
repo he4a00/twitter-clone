@@ -97,9 +97,6 @@ export const PostCard = ({
   };
 
   const DateFormatter = new Intl.DateTimeFormat(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
     hour: "numeric",
     minute: "numeric",
     second: "numeric",
@@ -123,7 +120,7 @@ export const PostCard = ({
           </div>
         </div>
       ) : null}
-      <div className="flex border-b px-4 py-4">
+      <div className="flex border-b px-[4px] py-4">
         <Link href={`/profiles/${post.user?.id}`}>
           <ProfileImage
             width={50}
