@@ -1,9 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { api } from "~/utils/api";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+import type { PostLike } from "@prisma/client";
+
+type SavedPost = {
+  id: string;
+
+  post?: {
+    id: string;
+    user: { id: string; image: string | null; name: string | null };
+    content: string;
+    createdAt: Date;
+    likes: PostLike[];
+  };
+};
 
 type SaveButtonProps = {
   saved: boolean | undefined;
@@ -20,8 +36,11 @@ type SaveButtonProps = {
 };
 
 const SaveButton = ({ saved, post, postId, setSaved }: SaveButtonProps) => {
-  const { data: savedPostsData } = api.post.getSavedPosts.useQuery();
-
+  const router = useRouter();
+  const { id } = router.query;
+  const { data: savedPostsData } = api.post.getSavedPosts.useQuery({
+    id: id ? id?.toString() : "",
+  });
   const { data: sessionData } = useSession();
   const ctx = api.useContext();
   const addToSavedPosts = api.post.addtoSavedPosts.useMutation({
@@ -38,12 +57,13 @@ const SaveButton = ({ saved, post, postId, setSaved }: SaveButtonProps) => {
     },
   });
   useEffect(() => {
-    const userSavedPost = savedPostsData?.find(
-      (saved) =>
-        saved.post?.id === post.id && saved.user.id === sessionData?.user?.id
-    );
+    const userSavedPost: SavedPost | undefined = savedPostsData?.post;
 
-    const userHasSavedPost = Boolean(userSavedPost);
+    const userHasSavedPost = Boolean(
+      userSavedPost &&
+        userSavedPost.id === post.id &&
+        userSavedPost.post?.user.id === sessionData?.user?.id
+    );
     setSaved(userHasSavedPost);
   }, [post.id, saved, savedPostsData, sessionData?.user?.id, setSaved]);
 
